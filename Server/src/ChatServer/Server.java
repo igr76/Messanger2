@@ -27,21 +27,30 @@ public class Server implements  TCPConnectionListener{
 
     @Override
     public synchronized void onConnectionReady(TCPConnection tcpConnection) {
-
+           connections.add(tcpConnection);
+           sendToAllConnections("Client connected: " + tcpConnection);
     }
 
     @Override
     public synchronized void onReseiveString(TCPConnection tcpConnection, String value) {
-
+            sendToAllConnections(value);
     }
 
     @Override
     public synchronized void onDisconnect(TCPConnection tcpConnection) {
-
+         connections.remove(tcpConnection);
+        sendToAllConnections("Client disconnected: " + tcpConnection);
     }
 
     @Override
     public synchronized void onException(TCPConnection tcpConnection, Exception e) {
+        System.out.println("TCPConnection Exception: " + e);
+    }
 
+    private void sendToAllConnections(String values) {
+        System.out.println(values);
+        final int cnt = connections.size();
+        for (int i = 0; i < cnt; i++) { connections.get(i).sendString(values);
+        }
     }
 }
